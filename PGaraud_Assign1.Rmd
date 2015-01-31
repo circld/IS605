@@ -1,0 +1,127 @@
+---
+title: "Problem Set 1 & 2"
+author: "Paul Garaud"
+date: "Friday, January 30, 2015"
+output: html_document
+---
+
+### Problem Set 1
+1. u' * v = -0.5 (n.b. this question is ill-defined; u and v are non-conformable)
+2. ||u|| = 1/sqrt(2), ||v|| = 5
+3. 3u - 2v = [-9/2; 19/2]
+4. theta = 94.55 degrees = 1.64 radians
+
+### Problem Set 2
+
+```{r}
+# define helper function to swap matrix rows
+swap.rows <- function(A, r1, r2) {
+  stopifnot(class(A) == 'matrix')
+  X <- A
+  A[r1, ] <- X[r2, ]
+  A[r2, ] <- X[r1, ]
+  return(A)
+}
+
+solve.equations <- function(A, b) {
+  # check inputs for class and shape
+  stopifnot(class(A) == 'matrix')
+  stopifnot(class(b) %in% c('numeric', 'integer') && 
+              length(b) == dim(A)[1])
+  
+  # store matrix dimensions
+  X <- cbind(A, b)
+  n <- dim(X)[1]
+  m <- dim(X)[2]
+  
+  
+  for (c in 1:(m-1)) {
+    
+    if (c > 1) {
+      while (sum(X[1, 1:(c-1)]) != 0) {
+        for (r in 2:n) {
+          X <- swap.rows(X, 1, r)
+          if (r == n) break
+        }
+      }
+    }    
+    
+    # ensure current column element in first row is not zero
+    # and has leading zeros; swap rows otherwise
+    while (X[1, c] == 0) {
+      for (index in 2:n) {
+        if (X[index, c] != 0) {
+          X <- swap.rows(X, 1, index)
+        }
+      if (X[1, c] == 0) break
+      }
+    }
+    
+    if (X[1, c] == 0) next
+    
+    X[1, ] <- X[1,] / X[1, c]
+    
+    for (r in 2:n) {
+      if (X[r, c] == 0) {
+        next
+      }
+      X[r, ] <- X[r, ] - X[r, c] * X[1, ]
+    }
+  }
+  
+  # make sure leading non-zero figure is 1 & reorder
+  for (r in 1:n) {
+    for (c in 1:(m - 1)) {
+      if (X[r, c] != 0) {
+        X[r, ] <- X[r, ] / X[r, c]
+        if (c > r) {
+          X <- swap.rows(X, r, (n + 1 - r))
+        }
+      }
+    }
+  }
+  
+  return(X)
+`%ni%` <- Negate(`%in%`)
+
+solve.equations <- function(A, b) {
+  # check inputs for class and shape
+  stopifnot(class(A) == 'matrix')
+  stopifnot(class(b) %in% c('numeric', 'integer') && 
+              length(b) == dim(A)[1])
+  
+  X <- cbind(A, b)
+  n <- dim(X)[1]
+  m <- dim(X)[2]
+  
+  
+  for (c in 1:(m-1)) {
+    
+    # ensure current leftmost element in first row is not zero
+    # and rearrange if it is
+    while (X[1, c] == 0) {
+      for (index in 2:n) {
+        if (X[index, c] != 0) {
+          X1 <- X
+          X[1, ] <- X1[index, ]
+          X[index, ] <- X1[1, ]
+        }
+      if (X[1, c] == 0) break
+      }
+    }
+    
+    if (X[1, c] == 0) next
+    
+    X[1, ] <- X[1,] / X[1, c]
+    
+    for (r in 2:n) {
+      if (X[r, c] == 0) {
+        next
+      }
+      X[r, ] <- X[r, ] - X[r, c] * X[1, ]
+    }
+  }
+  
+  return(X)
+}
+```
