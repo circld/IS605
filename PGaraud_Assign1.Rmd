@@ -82,46 +82,5 @@ solve.equations <- function(A, b) {
   }
   
   return(X)
-`%ni%` <- Negate(`%in%`)
-
-solve.equations <- function(A, b) {
-  # check inputs for class and shape
-  stopifnot(class(A) == 'matrix')
-  stopifnot(class(b) %in% c('numeric', 'integer') && 
-              length(b) == dim(A)[1])
-  
-  X <- cbind(A, b)
-  n <- dim(X)[1]
-  m <- dim(X)[2]
-  
-  
-  for (c in 1:(m-1)) {
-    
-    # ensure current leftmost element in first row is not zero
-    # and rearrange if it is
-    while (X[1, c] == 0) {
-      for (index in 2:n) {
-        if (X[index, c] != 0) {
-          X1 <- X
-          X[1, ] <- X1[index, ]
-          X[index, ] <- X1[1, ]
-        }
-      if (X[1, c] == 0) break
-      }
-    }
-    
-    if (X[1, c] == 0) next
-    
-    X[1, ] <- X[1,] / X[1, c]
-    
-    for (r in 2:n) {
-      if (X[r, c] == 0) {
-        next
-      }
-      X[r, ] <- X[r, ] - X[r, c] * X[1, ]
-    }
-  }
-  
-  return(X)
 }
 ```
