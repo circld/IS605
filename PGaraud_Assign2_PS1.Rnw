@@ -1,0 +1,15 @@
+\documentclass{article}
+\begin{document}
+Paul Garaud
+Assignment 2 Problem Set 1 \\
+
+\begin{enumerate}
+  \item Show that $A^TA \ne AA^T$ \\\\
+  Suppose $A$ is $m \times n$ where $m \ne n$. It follows that $A^T$ is $n \times m$.
+  Since $A^TA$ is $n \times n$ and $AA^T$ is $m \times m$, these two matrices cannot
+  be equal.
+  \item Under what conditions is $A^TA \ne AA^T$ true? \\\\
+  If $A$ is symmetric, that is $A = A^T$, then $A^TA = AA = AA^T$ is satisfied.
+\end{enumerate}
+
+\end{document}
