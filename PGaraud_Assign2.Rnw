@@ -12,7 +12,8 @@ Assignment 2 Problem Set 1 \\
   If $A$ is symmetric, that is $A = A^T$, then $A^TA = AA = AA^T$ is satisfied.
 \end{enumerate}
 
-Assignment 2 Problem Set 2 \\
+\begin{flushleft}Assignment 2 Problem Set 2
+\end{flushleft}
 
 <<echo = TRUE, eval = TRUE>>=
 
@@ -86,7 +87,7 @@ invert.E <- function(E) {
   return(E)
 }
 
-# test that above functions work correctly
+# get upper triangular form through Gaussian elimination
 get.U<- function(A) {
   piv <- get.pivot(A)
   U <- A
@@ -99,7 +100,7 @@ get.U<- function(A) {
 }
 
 
-# LU decomposition
+# get lower triangular matrix L from A = LU
 get.L <- function(A) {
   U <- A
   L <- diag(nrow(A))
