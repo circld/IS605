@@ -1,0 +1,229 @@
+### IS605 Assignment 3
+Paul Garaud
+
+### Problem Set 1
+
+**(1) What is the rank of the matrix A?**
+$$ 
+A = \begin{bmatrix}
+1 & 2 & 3 & 4 \\
+-1 & 0 & 1 & 3 \\
+0 & 1 & -2 & 1 \\
+5 & 4 & -2 & -3 \end{bmatrix} 
+%
+\overset{R4 - 5R1}{\rightarrow}
+\begin{bmatrix}
+1 & 2 & 3 & 4 \\
+-1 & 0 & 1 & 3 \\
+0 & 1 & -2 & 1 \\
+0 & -6 & -17 & -23 
+\end{bmatrix}
+%
+\overset{R2+R1}{\rightarrow}
+\begin{bmatrix}
+1 & 2 & 3 & 4 \\
+0 & 2 & 4 & 7 \\
+0 & 1 & -2 & 1 \\
+0 & -6 & -17 & -23 
+\end{bmatrix}\\
+%
+\overset{2R3-R2}{\rightarrow}
+\begin{bmatrix}
+1 & 2 & 3 & 4 \\
+0 & 2 & 4 & 7 \\
+0 & 0 & -8 & -5 \\
+0 & -6 & -17 & -23 
+\end{bmatrix}
+%
+\overset{R4-3R2}{\rightarrow}
+\begin{bmatrix}
+1 & 2 & 3 & 4 \\
+0 & 2 & 4 & 7 \\
+0 & 0 & -8 & -5 \\
+0 & 0 & -5 & -2 
+\end{bmatrix}
+%
+\overset{8R4-5R3}{\rightarrow}
+\begin{bmatrix}
+1 & 2 & 3 & 4 \\
+0 & 2 & 4 & 7 \\
+0 & 0 & -8 & -5 \\
+0 & 0 & 0 & 9 
+\end{bmatrix}
+$$
+Since A is row-equivalent to an upper triangular matrix with four pivots, A has rank 4.
+
+**(2) Given an $m \times n$ matrix where $m > n$, what can be the maximum rank? The minimum rank, assuming that the matrix is non-zero?**
+
+The maximum rank of this matrix will be $min(m, n)$, or n. The minimum is rank = 1.
+
+**(3) What is the rank of matrix B?**
+$$
+B =
+\begin{bmatrix}
+1 & 2 & 1 \\
+3 & 6 & 3 \\
+2 & 4 & 2
+\end{bmatrix}
+= 
+\begin{bmatrix}
+1 & 1 & 1 \\
+3 & 3 & 3 \\
+2 & 2 & 2
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & 0 \\
+0 & 2 & 0 \\
+0 & 0 & 1
+\end{bmatrix}
+$$
+This demonstrates that $2B_{col1} = 2B_{col3} = B_{col2}$. Thus this matrix has only one linearly independent column, so its rank = 1.
+
+### Problem Set 2
+
+**Compute the eigenvalues and eigenvectors of the matrix A.**
+$$
+(1) \hspace{.2cm} (A - \lambda I)x = 0
+\hspace{.5in}
+(2) \hspace{.2cm} |A - \lambda I| = 0 \\
+%
+\hspace{.2cm} \\
+%
+A =
+\begin{bmatrix}
+1 & 2 & 3 \\
+0 & 4 & 5 \\
+0 & 0 & 6
+\end{bmatrix} \\
+$$
+Solve for eigenvalues:
+
+$$
+|A - \lambda I|
+=
+\begin{vmatrix}
+1 - \lambda & 2 & 3 \\
+0 & 4 - \lambda & 5 \\
+0 & 0 & 6-\lambda 
+\end{vmatrix}
+= (6 - \lambda)(1 - \lambda)(4 - \lambda) = 0 
+\hspace{.2cm} \therefore \hspace{.2cm}
+\lambda_{1} = 6, \hspace{.2cm} \lambda_{2} = 4, \hspace{.2cm} \lambda_{3} = 1 \\
+$$
+
+Given $\lambda = 6$ solve for corresponding eigenvector
+$$
+(A - \lambda I)x =
+\begin{bmatrix}
+1 - 6 & 2 & 3 \\
+0 & 4 - 6 & 5 \\
+0 & 0 & 6 - 6
+\end{bmatrix}x
+\overset{R1 + R2}{\rightarrow}
+\begin{bmatrix}
+-5 & 0 & 8 \\
+0 & -2  & 5 \\
+0 & 0 & 0
+\end{bmatrix}x = 0 \\
+%
+\begin{matrix}
+-5x_{1} + 8x_{3} = 0 \\
+-2x_{2} + 5x_{3} = 0
+\end{matrix} \hspace{.2cm} 
+\rightarrow \hspace{.2cm}
+x_{2} = \frac{5}{2}x_{3}, \hspace{.2cm}
+x_{1} = \frac{8}{5}x_{3} \\
+%
+Let \hspace{.1cm} x_{3} = a: \hspace{.2cm}
+\begin{bmatrix}
+x_{1} \\
+x_{2} \\
+x_{3}
+\end{bmatrix}
+= a\begin{bmatrix}
+8/5 \\
+5/2 \\
+1
+\end{bmatrix}
+$$
+
+Thus we are left with eigenvalue, eigenvector pair:
+$$
+\lambda = 6, \hspace{.5in}
+\frac{1}{\sqrt{(\frac{8}{5})^2 + (\frac{5}{2})^2 + 1}}
+\begin{bmatrix} 8/5 \\ 5/2 \\ 1 \end{bmatrix}
+$$
+
+Given $\lambda = 4$ solve for corresponding eigenvector
+$$
+(A - \lambda I)x =
+\begin{bmatrix}
+1 - 4 & 2 & 3 \\
+0 & 4 - 4 & 5 \\
+0 & 0 & 6 - 4
+\end{bmatrix}x
+\overset{\begin{matrix}\frac{1}{5}R2 \\ \frac{5}{2}R3 - R2\end{matrix}}{\rightarrow}
+\begin{bmatrix}
+-3 & 2 & 3 \\
+0 & 0 & 1 \\
+0 & 0 & 0
+\end{bmatrix}x
+\overset{R1 - 3R2}{\rightarrow}
+\begin{bmatrix}
+-3 & 2 & 0 \\
+0 & 0 & 1 \\
+0 & 0 & 0
+\end{bmatrix}x = 0 \\
+%
+\begin{matrix}
+-3x_{1} + 2x_{2} = 0 \\
+x_{3} = 0
+\end{matrix} \rightarrow
+x_{1} = \frac{2}{3}x_{2}, \hspace{.2cm} x_{3} = 0 \\
+%
+Let \hspace{.1cm} x_{2} = b: \hspace{.2cm}
+\begin{bmatrix} x_{1} \\ x_{2} \\ x_{3} \end{bmatrix}
+= b\begin{bmatrix} 2/3 \\ 1 \\ 0 \end{bmatrix}
+$$
+This time, we are left with eigenvalue, eigenvector pair:
+$$
+\lambda = 4, \hspace{.5in}
+\frac{1}{\sqrt{(\frac{2}{3})^2 + 1}}
+\begin{bmatrix} 2/3 \\ 1 \\ 0 \end{bmatrix}
+$$
+
+Given $\lambda = 1$ solve for corresponding eigenvector
+$$
+(A - \lambda I)x =
+\begin{bmatrix}
+1 - 1 & 2 & 3 \\
+0 & 4 - 1 & 5 \\
+0 & 0 & 6 - 1
+\end{bmatrix}x
+\overset{\begin{matrix}R2 - R3 \\ \frac{1}{5}R3 \end{matrix}}{\rightarrow}
+\begin{bmatrix}
+0 & 2 & 3 \\
+0 & 3 & 0 \\
+0 & 0 & 1
+\end{bmatrix}x
+\overset{\begin{matrix} R1 - \frac{2}{3}R2 - 3R3 \\ \frac{1}{3}R2 \end{matrix}}{\rightarrow}
+\begin{bmatrix}
+0 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1
+\end{bmatrix}x = 0 \\
+%
+\begin{matrix}
+x_{2} = 0 \\
+x_{3} = 0
+\end{matrix} \\
+%
+Let \hspace{.1cm} x_{1} = c: \hspace{.2cm}
+\begin{bmatrix} x_{1} \\ x_{2} \\ x_{3} \end{bmatrix}
+= c\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}
+$$
+The final eigenvalue, eigenvector pair is:
+$$
+\lambda = 1, \hspace{.5in}
+\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}
+$$
