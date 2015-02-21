@@ -1,0 +1,93 @@
+## IS605 Assignment 4
+Paul Garaud
+
+### PS 1
+```{r}
+A <- matrix(c(1, -1, 2, 0, 3, 4), ncol=3)
+
+# Calculate AA' and A'A
+X <- A %*% t(A)
+Y <- t(A) %*% A
+
+# Calculate eigenvalues & eigenvectors for X & Y
+X.eig <- eigen(X)
+Y.eig <- eigen(Y)
+
+# SVD of A
+decomp <- svd(A)
+
+# compare eigenvalues of A against square root of eigenvalues
+# from AA' (rounded to the 4th significant digit)
+all.equal(round(decomp$d, 4), round(sqrt(X.eig$values), 4))
+
+# As we would expect, the eigenvalues of A are equal to the
+# square root of the eigenvalues of AA'
+
+# repeat above for A'A (we exclude 0 eigenvalue)
+all.equal(round(decomp$d, 4), round(sqrt(Y.eig$values), 4)[-3])
+
+# finally, we compare the eigenvectors of A against those
+# of AA' and A'A, which we expect to be equal
+all.equal(round(decomp$u, 4), 
+          round(X.eig$vectors, 4) %*% diag(c(-1, 1)))
+all.equal(round(decomp$v, 4), 
+          round(Y.eig$vectors, 4)[, -3] %*% diag(c(-1, 1)))
+
+# note that the elements in the first eigenvectors for 
+# AA' and A'A calculated using svd() both had the opposite
+# signs of those calculated manually. Multiplying an
+# orthogonal vector by -1 does not change its orthogonality
+# nor its length, and so both variants of these vectors are
+# functionally equivalent, as show below:
+
+# eigenvectors of X * eigenvalues * transpose of eigenvectors of Y
+# are equal to A
+all.equal(
+  round(X.eig$vectors %*% diag(decomp$d) %*% t(Y.eig$vectors[, 1:2]), 4),
+  A
+)
+
+# eigenvectors of u * eigenvalues * transpose of eigenvectors of v
+# are equal to A
+all.equal(
+  round(decomp$u %*% diag(decomp$d) %*% t(decomp$v), 4),
+  A
+)
+```
+
+### PS 2
+Write a function myinverse(A) that returns the inverse of a square, full-rank matrix A.
+```{r}
+myinverse <- function(A) {
+  
+  rows <- nrow(A)
+  cols <- ncol(A)
+  
+  cof <- A
+  
+  for (r in 1:rows) {
+    
+    for (c in 1:cols) {
+      
+      # cofactor
+      cof[r, c] = (-1)^(r+c) * det(A[-r, -c])
+      
+    }
+    
+  }
+  
+  # return cof matrix transpose over det(A)
+  return(t(cof) / det(A))
+  
+}
+```
+
+A couple examples validating myinverse:
+```{r}
+A <- matrix(c(1, 8, 3, -2, 0, 0, 5, 4, 5), nrow=3)
+(round(A %*% myinverse(A), 4))
+
+B <- matrix(c(3, 1, 2, 2, 2, 8, 9, -1, 0, 9, 0, 15, -3, 1, -8, 9, 10, 
+              8, 8, 0, 0, 2, -5, -10, 7), nrow=5)
+(round(B %*% myinverse(B), 4))
+```
