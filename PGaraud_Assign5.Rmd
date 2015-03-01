@@ -1,0 +1,78 @@
+## IS605 Assignment 5
+Paul Garaud
+
+### PS 1
+```{r}
+# Ax = b
+A <- matrix(c(1, 1, 1, 1, 0, 1, 3, 4), nrow=4)
+b <- c(0, 8, 8, 20)
+```
+
+* Compute $A^TA$ and $A^Tb$
+```{r}
+AA <- t(A) %*% A
+Ab <- t(A) %*% b
+```
+
+* Solve for $\hat{x}$ in R using the above two computed matrices
+```{r}
+(x.hat <- solve(AA) %*% Ab)
+```
+
+* What is the squared error of this solution?
+```{r}
+(e2 <- t(Ab - AA %*% x.hat) %*% (Ab - AA %*% x.hat))
+```
+
+* Instead of $b$, start with $p = \begin{bmatrix} 1 \\ 5 \\ 13 \\ 17 \end{bmatrix}$
+
+Solution to Ax = p is $x = \begin{bmatrix} 1 \\ 4 \end{bmatrix}$ since:
+```{r}
+p <- c(1, 5, 13, 17)
+Ap <- t(A) %*% p
+x <- A %*% c(1, 4)
+all.equal(x, as.matrix(p))  # test equivalence of every element
+
+# Show that error vector e = 0
+(Ap - t(A) %*% x)  # e = A'p - A'x
+```
+
+* Show that the error $e = b - p = \begin{bmatrix} -1 \\ 3 \\ -5 \\ 3 \end{bmatrix}$
+```{r}
+e.bp <- b - p
+all.equal(e.bp, c(-1, 3, -5, 3))
+```
+
+* Show that $e$ is orthogonal to $p$ and each column of $A$
+```{r}
+(e.bp %*% p)
+apply(A, 2, function(col) {e.bp %*% col})  # multiply e.bp and each col of A
+```
+
+### PS 2
+
+```{r}
+# load data
+fname <- 'auto-mpg.data'
+if (!(fname %in% dir())) {
+  fname <- choose.files(default = fname, caption = 'Please select *.data file.')
+}
+auto <- read.table(fname)
+
+# create A matrix and b vector
+A <- as.matrix(auto[, 1:4])
+b <- as.matrix(auto[, 5])
+
+# Least Squares fit (no intercept term)
+(coef <- solve(t(A) %*% A) %*% t(A) %*% b)
+```
+Thus the best fitting linear model is:
+
+$\hat{mpg} = -0.03V_1 + 0.157V_2 - 0.006V_3 + 1.997V_4$
+
+The error between predicted mpg, $\hat{mpg}$, and actual $mpg$:
+
+```{r}
+mpg.pred <- A %*% coef
+t(b - mpg.pred) %*% (b - mpg.pred)  # squared sum of residuals
+```
