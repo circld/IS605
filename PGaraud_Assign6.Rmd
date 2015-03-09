@@ -1,0 +1,16 @@
+# IS605 Assignment 6
+
+## PS 1
+
+(1) When you roll a fair dice 3 times, how many possible outcomes are there?<br>
+A single roll has six possible outcomes, so the number of possible combination of outcomes is $6^3=216$.
+
+(2) What is the probability of getting a sum total of 3 when you roll a die two times?<br>
+There are two ways for two consecutive die rolls to sum to 3: the first roll = 1, second roll = 2 and vice versa. There are a total of $6^2$ possible elementary events, so the probability is $1/18$.
+
+(3) Assume there are 25 strangers in a room. What is the probability of [at least] two sharing the same birthday? What about the probability with 50 people?<br>
+The probability of no one in the room sharing the same birthday is: $$\frac{365!}{340!365^{25}}\approx 0.43$$ This indicates that the probability of at least two people sharing a birthday is $1 - 0.43 = 0.57$.<br><br> This generalizes to: $$1 - \frac{365!}{(365-n)!365^n}$$Hence, the probability in the case of n = 50 people is: $$1 - \frac{365!}{(315)!365^{50}}\approx 1 - 0.03 = 0.97$$
+
+
+## PS 2
+
