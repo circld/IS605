@@ -14,3 +14,77 @@ The probability of no one in the room sharing the same birthday is: $$\frac{365!
 
 ## PS 2
 
+Write a program to read an English language document and write out the estimated probabilities for each word of the document. Extend it to calculate the probability of two words (order does not matter).
+
+```{r, message=FALSE}
+require(stringr)
+
+calc.word.prob <- function(num.words = 1) {
+  fname <- choose.files()
+  con  <- file(fname, open = 'r', encoding = 'UTF-8-BOM')
+  
+  
+  lines <- readLines(con)
+  close(con)
+  
+  # remove blank lines
+  lines <- lines[lines != '']
+  
+  # create empty dataframe to store words and counts
+  words <- data.frame(word = I('a'), count = 0)
+  words <- words[FALSE,]
+  
+  # split & clean
+  for (line in lines) {
+    
+    wds <- str_split(line, '[[:space:]]')
+    wds <- str_replace_all(wds[[1]], '[^[:alpha:]]', '')
+    wds <- wds[wds != '']  # remove empty strings
+    
+    n <- num.words - 1
+    
+    for (i in 1:(length(wds) - n)) {
+      
+      w <- tolower(wds[i:(i + n)])
+      w <- str_join(w[order(w)], collapse = '.')
+      
+      # check if in words; increment if true, add otherwise
+      if (w %in% words$word) {
+        words[words$word == w, 'count'] <- words[words$word == w, 'count'] + 1
+      } else {
+        words[nrow(words) + 1,] <- list(w, 1)
+      }
+      
+    }
+  }
+  
+  # calculate probabilities
+  words$prob <- words$count / sum(words$count)
+  
+  # sort by prob
+  words <- words[order(words$prob, decreasing = TRUE),]
+  
+  return(words)
+}
+```
+
+The function `calc.word.prob` takes a single argument representing the length of the n-gram for which the probabilities should be calculated (default is 1) and returns a dataframe with three columns: word, count, and probability.
+
+```{r, warning=FALSE}
+head(calc.word.prob(1))
+head(calc.word.prob(2))
+```
+
+According to the above calculations, the word "the" appears with frequency between 5-6%. According to the BYU Time Corpus:
+
+```{r, message=FALSE}
+require(ggplot2)
+
+decades <- seq(from = 1920, to = 2000, by = 10)
+freq.per.mil <- c(64263.20,  55426.82,	57755.03,	58320.10,	58633.99,	59661.06,	60522.72,	55095.48,	50590.06)
+pct <- freq.per.mil / 1000000 * 100
+time.the <- data.frame(decades = decades, percent = pct)
+qplot(decades, percent, data = time.the)
+```
+
+As we can see from the chart, the probability of the word being "the" has fluctuated between 5 and 6.5 percent over the period 1920-2000, showing that our estimate is fairly accurate in this case.
