@@ -1,0 +1,110 @@
+# IS605 Assignment 7
+Paul Garuad
+
+### PS 1
+Defining functions to calculate mean and standard deviation in-memory.
+```{r}
+# calculating mean and std. dev (set/population)
+avg <- function(nums) {
+  return(sum(nums) / length(nums))
+}
+
+std.dev <- function(nums, sample = FALSE) {
+  n <- length(nums)
+  if (sample) {
+    n <- n - 1
+  } 
+  avg <- avg(nums)
+  var <- sum((nums - avg)^2) / n
+  return(sqrt(var))
+}
+```
+
+Set up numbers for testing against built-in functions.
+```{r}
+# labels
+labels <- c('nums', 'nums + new.nums1', 'nums + new.nums1 + new.nums2')
+
+# generate some numbers
+set.seed(100)
+nums <- list()
+nums[[labels[1]]] <- sample(seq(from = -10, to = 10, by = 1), size = 40, replace = TRUE)
+nums[[labels[2]]] <- c(8, -3, 22)
+nums[[labels[3]]] <- c(-1, 10, 4, 8, -3, -3)
+
+# consolidating numbers into cumulative lists
+cum.nums <- list()
+cum.nums[[labels[1]]] <- nums[[labels[1]]]
+cum.nums[[labels[2]]] <- c(nums[[labels[1]]], nums[[labels[2]]])
+cum.nums[[labels[3]]] <- c(nums[[labels[1]]], nums[[labels[2]]], nums[[labels[3]]])
+```
+
+Test user-written functions against built-ins:
+```{r}
+mean(nums[[1]])  # built-in
+avg(nums[[1]])  # user
+
+sd(nums[[1]])  # built-in (population estimate)
+std.dev(nums[[1]], sample = TRUE)  # user (population estimate)
+std.dev(nums[[1]])  # user population standard deviation
+```
+
+We see from the above that R uses Bessel's correction when calculating variance and standard deviation; in other words, the working assumption is that the user is working with a sample and interested in the population estimate of the standard deviation. The user-written version takes an additional parameter (sample) which when set to `TRUE`, calculates the standard deviation using $n - 1$.
+
+When working with a number stream (i.e., not all the numbers can fit in-memory), we can still calculate the mean exactly. However, the standard deviation is trickier and, as far as I can tell, cannot be calculated exactly without storing all mean deviations.
+
+The two functions below are designed to 'update' the mean and standard deviation (estimate) using only the previous mean, standard deviation, the number of terms, and the new numbers coming from the stream:
+```{r}
+# calculating mean and estimating std. dev
+# from a stream of numbers
+stream.avg <- function(avg, n, nums) {
+  return((avg * n + sum(nums)) / (n + length(nums)))
+}
+
+stream.sd <- function(sd, avg, n, nums) {
+  new.avg <- stream.avg(avg, n, nums)
+  sum.dev2 <- sd^2 * n + sum((nums - new.avg)^2)
+  return(sqrt((sum.dev2 / (n + length(nums)))))
+}
+```
+
+To evaluate the performance of these versions of the `avg` and `std.dev` for working with streams, we use the exact mean and standard deviations for each cumulative set of numbers as a benchmark.
+```{r}
+# number stream
+n <- list()
+means <- list()
+std.devs <- list()
+
+# initial mean and std. dev for nums
+n[labels[1]] <- length(nums[[1]])
+means[labels[1]] <- avg(nums[[1]])
+std.devs[labels[1]] <- std.dev(nums[[1]])
+
+# updated # of items, mean, and estimated std. dev given new numbers new.nums1
+for (i in 1:2) {
+  n[labels[i + 1]] <- n[[labels[i]]] + length(nums[[labels[i + 1]]])
+  means[labels[i + 1]] <- stream.avg(
+    means[[labels[i]]], n[[labels[i]]], nums[[labels[i + 1]]]
+  )
+  std.devs[labels[i + 1]] <- stream.sd(
+    std.devs[[labels[i]]], means[[labels[i]]], n[[labels[i]]], nums[[labels[i + 1]]]
+  )
+}
+
+# calculate exact mean and std. dev
+exact.means <- list()
+exact.std <- list()
+for (i in 1:3) {
+  exact.means[labels[i]] <- mean(cum.nums[[labels[i]]])
+  exact.std[labels[i]] <- std.dev(cum.nums[[labels[i]]])
+}
+
+# compare exact to estimates
+exact.means
+means
+
+exact.std
+std.devs
+```
+
+While these estimates for the standard deviation are fairly good at first glance, a further examination of their performance across different types of numbers and stream sizes should be conducted before putting the function into use.
