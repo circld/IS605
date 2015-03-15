@@ -108,3 +108,47 @@ std.devs
 ```
 
 While these estimates for the standard deviation are fairly good at first glance, a further examination of their performance across different types of numbers and stream sizes should be conducted before putting the function into use.
+
+### PS 2
+
+```{r}
+file.name <- choose.files(caption = 'Please choose auto data.')
+df <- read.table(file.name)
+
+mat <- as.matrix(df)
+```
+
+The variance-covariance matrix is:
+```{r}
+i <- as.matrix(rep(1, nrow(mat)))  # 392 x 1 vector of ones
+demeaned <- mat - i %*% (t(i) %*% mat / 392)  # subtract col means
+(df.cov <- t(demeaned) %*% demeaned / 391)  # divide by n - 1
+```
+
+We can check our calculations against the built-in `cov` function.
+```{r}
+all.equal(df.cov, cov(df))
+```
+
+The correlation matrix is:
+```{r}
+sd <- as.matrix(sqrt(diag(df.cov)))  # variance = diagonal of vcov matrix
+df.cor <- df.cov / (sd %*% t(sd))
+```
+
+Once again, we check against the built-in equivalent function, `cor`:
+```{r}
+all.equal(df.cor, cor(df))
+```
+
+### Extra credit: PCA
+
+To extract the principle compononts from for the auto data, we use the `prcomp` R command.
+```{r, message=FALSE}
+(df.pca <- prcomp(df, center = TRUE, scale. = TRUE))
+plot(df.pca)
+```
+
+Centering the data is important to ensure that the data is centered at the origin. While PCA projects the data onto an orthogonal basis, it does cannot apply affine transformations to the data (all principal components run through the origin). This means an uncentered dataset, when projected into the new basis, may have its first principal component extend out to the point cloud, which is misleading and does not accurately represent the dimension with the greatest variance. See [this graphical example](http://stats.stackexchange.com/questions/22329/how-does-centering-the-data-get-rid-of-the-intercept-in-regression-and-pca) for a more intuitive explanation.
+
+Scaling is very important as PCA is sensitive to the scale/units in which the different variables are measured. Failure to scale the variables means that using inches instead of centimeters in one of the variables, for instance, will lead to different results.
