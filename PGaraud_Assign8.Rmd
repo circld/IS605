@@ -1,0 +1,64 @@
+# IS605 Assignment 8
+Paul Garaud
+
+## PS 1
+We know that (assuming that it is a month with 30 days) your friend commutes by train with probability $P(T) = \frac{2}{3}$ and by bus with probability $P(B) = 1 - P(T) = \frac{1}{3}$. We are also told that she is on time with probability $P(oT|T) = \frac{9}{10}$ when taking the train and $P(oT|B) = \frac{1}{2}$ when taking the bus. We would like to know what the probability is that she took the bus given that she was on time, i.e. $P(B|oT)$.
+
+Bayes Rule states that:
+
+$$
+P(B|oT) = \frac{P(oT|B)\cdot P(B)}{P(oT)}
+$$
+
+Since $P(oT) = P(oT|B)\cdot P(B) + P(oT|T)\cdot P(T)$, we have:
+
+$$
+P(B|oT) = \frac{P(oT|B)\cdot P(B)}{P(oT|B)\cdot P(B) + P(oT|T)\cdot P(T)} =
+\frac{\frac{1}{2}\cdot \frac{1}{3}}{\frac{1}{2}\cdot \frac{1}{3} + \frac{9}{10}\cdot \frac{2}{3}} =
+\frac{5}{23}
+$$
+
+## PS 2
+
+First me must build the directed acyclic graph using the gRain package in R after supplying it with the underlying probabilities from the lecture notes:
+```{r set.up, message=FALSE}
+require(gRain)
+
+yn <- c('no', 'yes')
+lh <- c('low', 'high')
+d <- cptable(~difficult, values=c(0.3, 0.7), levels=yn)
+i <- cptable(~intelligence, values=c(0.8, 0.2), levels=lh)
+g.di <- cptable(~grade|difficult:intelligence, 
+                values=c(0.6, 0.4, 0.01, 0.99, 0.8, 0.2, 0.1, 0.9),
+                levels=lh)
+s.i <- cptable(~SAT|intelligence, values=c(0.9, 0.1, 0.2, 0.8), levels=lh)
+l.g <- cptable(~letter|grade, values=c(0.9, 0.1, 0.05, 0.95), levels=lh)
+
+probs <- compileCPT(list(d, i, g.di, s.i, l.g))
+probs
+```
+
+Let's check that the graph matches that in the lecture notes.
+
+```{r marg.probs}
+rec_letter <- grain(probs)
+plot(rec_letter)
+```
+
+If the letter of recommendation is good, then what is the probability that the course was difficult?
+
+```{r hard1}
+course_hard <- setEvidence(rec_letter, nodes = c('letter'), states = c('high'))
+querygrain(course_hard, nodes = c('difficult'))
+```
+
+The probability of the course being hard conditional on a good ('high') letter of recommendation is roughly 84%.
+
+If, in addition, we know that the SAT scores were high, then the probability should likely rise:
+
+```{r hard2}
+course_hard2 <- setEvidence(rec_letter, nodes = c('letter', 'SAT'), states = c('high', 'high'))
+querygrain(course_hard2, nodes = c('difficult'))
+```
+
+Sure enough, the probability of the course being hard has risen, although not by very much. The new probability that the course was hard is 86.4%.
