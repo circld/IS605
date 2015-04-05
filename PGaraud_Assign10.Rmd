@@ -38,7 +38,7 @@ eig.vect <- abs(B.eig$vectors[, 1])
 
 # since unit vector, we need to scale by length of r.length
 r.eig <- eig.vect * r.length
-all.equal(r.eig, r.final)  # |eig vector| = r.final.unit
+all.equal(r.eig, r.final)  # r.eig = r.final
 r.eig > 0  # all entries > 0
 sum(r.eig)  # sums to 1
 ```
