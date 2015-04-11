@@ -1,0 +1,103 @@
+# IS605 Assignment 11
+Paul Garaud
+
+
+### Heartrate data set
+Using R's `lm` function, perform regression analysis and measure the significance of the independent variables. Fit *Max Heart Rate* to *Age*.
+
+1. What is the resulting equation? 
+2. Is the effect of *Age* on *Max Heart Rate* significant? 
+3. What is the significance level? 
+4. Plot fitted relationship
+
+```{r hr}
+# create data & dataframe
+age <- c(
+  18, 23, 25, 35, 65, 54, 34, 56, 72, 19, 
+  23, 42, 18, 39, 37
+)
+max.hr <- c(
+  202, 186, 187, 180, 156, 169, 174, 172, 153, 199, 193, 
+  174, 198, 183, 178
+)
+hr <- data.frame(age = age, max.hr = max.hr)
+
+hr.reg <- lm(max.hr ~ age, data=hr)
+summary(hr.reg)
+```
+
+
+1. $Max Heart Rate = 210.1 - 0.8 \cdot Age$
+2. The coefficient of *Age* and the intercept are significantly different from zero
+3. Both are significant at the 0.001 level
+4. Plot below:
+
+```{r hr.plot}
+library(ggplot2)
+ggplot(hr, aes(x=age, y=max.hr)) + geom_point(alpha=0.5) +
+  geom_point(aes(x=age, y=hr.reg$fitted.values), color='red', alpha=1) +
+  labs(title='Age vs Max HR (fitted values in red)') +
+  theme_bw()
+```
+
+### Auto data set
+Perform linear regression using *mpg* as the dependent variable and *displacement*, *horsepower*, *weight*, and *acceleration* as the independent variables.
+
+Answer the following questions under two scenarios: fitting the equation to 1) the full data set and 2) to 40 randomly selected observations.
+
+1. What is the final fit equation?
+2. Which variables have a significant impact on *mpg*?
+3. What are their significance levels?
+4. What are the standard errors on each coefficient?
+
+```{r auto.load}
+# load data
+fname <- choose.files(caption='Please select auto-mpg.data file.')
+cols <- c('disp', 'hp', 'wt', 'acc', 'mpg')
+auto <- read.table(file = fname, col.names = cols)
+```
+
+#### Random sample of 40 obs
+```{r auto.40}
+set.seed(100)
+rows.to.keep <- sample(seq(from = 1, to = nrow(auto), by=1), 40)
+auto.40 <- auto[rows.to.keep, ]  # choose random obs
+
+# fit linear model
+auto.40.reg <- lm(mpg ~ ., data=auto.40)
+summary(auto.40.reg)
+confint(auto.40.reg)
+```
+
+1. $mpg = 51.578 - 0.038 \cdot disp + 0.012 \cdot hp - 0.004 \cdot wt - 0.613 \cdot acc$
+2. The intercept, *disp*, and *wt* are significant
+3. The intercept, *disp*, and *wt* are significant at the 0.001, 0.05, and 0.1 levels, respectively
+4. Standard Errors & 95% Confidence Interval:
+    
+|    | int   | disp | hp  | wt  | acc  | 
+|----|-------|------|-----|-----|------|
+| SE | 8.69 | 0.018 |0.071|0.002| 0.460|
+| CI |[33.935, 69.221]|[-0.074, -0.003]|[-0.131, 0.156]|[-0.009, 0.001]|[-1.547, 0.332]|
+
+#### Full sample
+```{r auto}
+auto.reg <- lm(mpg ~., data=auto)
+summary(auto.reg)
+confint(auto.reg)
+```
+
+1. $mpg = 45.251 - 0.006 \cdot disp - 0.044 \cdot hp - 0.005 \cdot wt - 0.023 \cdot acc$
+2. The intercept, *hp*, *wt* are significant
+3. The intercept, *hp*, *wt* are significant at the 0.001, 0.01, and 0.001 levels, respectively
+4. Standard Errors & 95% Confidence Interval:
+
+|    | int   | disp | hp  | wt  | acc  | 
+|----|-------|------|-----|-----|------|
+| SE | 2.456 | 0.007|0.017|0.001| 0.126|
+| CI |[40.442, 50.080]|[-0.0192, 0.007]|[-0.076, -0.011]|[-0.007, -0.004]|[-0.270, 0.224]|
+
+#### Conclusions
+
+The small sample regression has, as one would expect, much larger standard errors than the regression using the full sample. This is in line with the weak Law of Large Numbers, as the larger sample provides greater precision in the estimates of the coefficients. The higher precision is likewise reflected in the smaller confidence intervals for all variables.
+
+The significance of *disp* is lost in the full-sample regression, suggesting that the significance in the subsample regression is an artifact of the subsample rather than a genuine pattern in the data. Indeed, the results in the subsample regression may be slightly suspect given that the coefficient estimate for *hp* is even positive (although not statistically significant), which contradicts the expectation that *hp* and *mpg* are negatively correlated. In this regard as well, the full sample regression appears more robust.
