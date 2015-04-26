@@ -1,0 +1,36 @@
+# IS605 Assignment 12
+Paul Garaud
+
+
+### Finding the optimal model: minimizing cross-validation error
+Using the auto data set, fit various polynomial models to compute mpg as a function of the other four variables.
+
+```{r fit.models, message=FALSE}
+library(stats)
+library(boot)
+
+fname <- choose.files(caption='Please select auto-mpg.data file.')
+cols <- c('disp', 'hp', 'wt', 'acc', 'mpg')
+auto <- read.table(file = fname, col.names = cols)
+
+# define vector of degrees of polynomials we are interested in
+degrees <- 1:8
+
+# define lists to contain models and CV errors
+models <- list()
+cv.error <- c()
+adjusted <- c()
+
+# define models and calculate the cross-validation error
+for (i in degrees) {
+  models[[i]] <- glm(mpg ~ poly(disp + hp + wt + acc, i), data = auto)
+  cv.error[[i]] <- cv.glm(auto, models[[i]], K = 5)$delta[1]  # unadj cv error
+  adjusted[[i]] <- cv.glm(auto, models[[i]], K = 5)$delta[2]  # unadj cv error
+}
+
+# plot the error by degree of polynomial
+plot(degrees, cv.error, type = 'b', main='Unadjusted CV error')
+plot(degrees, adjusted, type = 'b', main='Adjusted CV error')
+```
+
+It looks like the second degree polynomial model is probably the most conservative choice for minimizing the cross validation error, ie., strikes the 'best' balance between bias and variance given the data. While some higher degree polynomials may improve our results, the lack of agreement between the adjusted and unadjusted charts and the largest improvement coming between the first and second degree polynomial models suggests that the second degree polynomial model is a sensible choice. If we had withheld an additional subset of data as a test set, we would be able to evaluate the effectiveness of our cross validation results.
