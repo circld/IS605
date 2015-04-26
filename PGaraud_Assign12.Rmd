@@ -14,7 +14,7 @@ cols <- c('disp', 'hp', 'wt', 'acc', 'mpg')
 auto <- read.table(file = fname, col.names = cols)
 
 # define vector of degrees of polynomials we are interested in
-degrees <- 1:8
+degrees <- 1:12
 
 # define lists to contain models and CV errors
 models <- list()
@@ -22,6 +22,7 @@ cv.error <- c()
 adjusted <- c()
 
 # define models and calculate the cross-validation error
+set.seed(100)
 for (i in degrees) {
   models[[i]] <- glm(mpg ~ poly(disp + hp + wt + acc, i), data = auto)
   cv.error[[i]] <- cv.glm(auto, models[[i]], K = 5)$delta[1]  # unadj cv error
