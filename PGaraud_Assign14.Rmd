@@ -1,0 +1,46 @@
+# IS605 Assignment 14
+Paul Garaud
+
+
+```{r helper}
+plot_approx <- function(x, eq, taylor) {
+  data <- data.frame(x=x, func=eq, approx=taylor)
+  
+  ggplot(data, aes(x=x, y=func)) + geom_line(size=1, alpha=0.5) +
+    geom_line(aes(x=x, y=approx), color='red', size=1, alpha=0.5) +
+    labs(title="Function vs 3rd degree Taylor approximation (approx in red)",
+         y="y")
+}
+```
+
+### Third degree Taylor expansions around x = 0
+
+1. $\begin{aligned}f(x) = \frac{1}{1-x}\end{aligned}$
+
+```{r eq1, message=FALSE}
+library(ggplot2)
+x <- seq(-0.5, 0.5, by = 0.05)
+
+eq1 <- 1 / (1 - x)  # actual function
+taylor1 <- 1 + x + x^2 + x^3
+
+plot_approx(x, eq1, taylor1)
+```
+
+2. $\begin{aligned}f(x) = e^x\end{aligned}$
+
+```{r eq2}
+eq2 <- exp(x)
+taylor2 <- 1 + x + (1/2) * x^2 + (1/6) * x^3
+
+plot_approx(x, eq2, taylor2)
+```
+
+3. $\begin{aligned}f(x) = ln(1+x)\end{aligned}$
+
+```{r eq3}
+eq3 <- log(1 + x)
+taylor3 <- x - (1/2) * x^2 + (1/3) * x^3
+
+plot_approx(x, eq3, taylor3)
+```
